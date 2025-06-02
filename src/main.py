@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 import signal
@@ -94,10 +95,39 @@ def handle_shutdown(signum: int, frame: Any) -> None:
     shutdown_requested = True
 
 
+def version():
+    """
+    Print the version of the application.
+    """
+    parser = argparse.ArgumentParser(
+        description="Print the version of the application."
+    )
+    parser.add_argument(
+        "--version", action="store_true", help="Print the version of the application."
+    )
+    args = parser.parse_args()
+    if args.version:
+        try:
+            try:
+                from importlib.metadata import PackageNotFoundError, version
+            except ImportError:
+                from importlib_metadata import PackageNotFoundError, version
+
+            try:
+                notifiq_version = version("notifiq")
+                print(f"notifiq {notifiq_version}")
+            except PackageNotFoundError:
+                print("[red]Package not found. Did you install it?[/red]")
+        except ImportError:
+            print("[red]importlib.metadata and importlib_metadata not found[/red]")
+        sys.exit(0)
+
+
 def main():
     """
     Main entry point for the application.
     """
+    version()
     credentials = pika.PlainCredentials(config.rabbitmq_user, config.rabbitmq_pass)
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
