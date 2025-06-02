@@ -1,5 +1,8 @@
 import json
 import logging
+import signal
+import sys
+from typing import Any
 
 import pika
 from pika.channel import Channel
@@ -21,11 +24,13 @@ start_health_server()
 # Initialize config
 config = Config()
 
+shutdown_requested = False
+
 # Initialize notifiers
 notifiers = {}
 notifiers["apprise"] = AppriseNotifier(config.apprise_urls)
 if config.apprise_urls.get("mattermost"):
-    notifiers["mattermost"] = MattermostNotifier(config.apprise_urls["mattermost"])
+    notifiers["mattermost"] = MattermostNotifier(config.apprise_urls["mattermost"])  # type: ignore
 # Loki notifier
 if config.loki_url:
     notifiers["loki"] = LokiNotifier(config.loki_url)
@@ -83,6 +88,12 @@ def callback(
         logging.exception("Failed to process message")
 
 
+def handle_shutdown(signum: int, frame: Any) -> None:
+    global shutdown_requested
+    logging.info(f"Received signal {signum}, shutting down gracefully...")
+    shutdown_requested = True
+
+
 def main():
     """
     Main entry point for the application.
@@ -103,7 +114,26 @@ def main():
         queue=config.rabbitmq_queue, on_message_callback=callback, auto_ack=True
     )
     logging.info(f"Listening for messages on queue '{config.rabbitmq_queue}'...")
-    channel.start_consuming()
+
+    # Register signal handlers
+    signal.signal(signal.SIGTERM, handle_shutdown)
+    signal.signal(signal.SIGINT, handle_shutdown)
+
+    try:
+        while not shutdown_requested:
+            connection.process_data_events(time_limit=1)
+    except Exception as e:
+        logging.error(f"Error in consumer loop: {e}")
+    finally:
+        try:
+            if channel.is_open:
+                channel.close()
+            if connection.is_open:
+                connection.close()
+        except Exception as e:
+            logging.warning(f"Error closing RabbitMQ connection: {e}")
+        logging.info("Shutdown complete.")
+        sys.exit(0)
 
 
 if __name__ == "__main__":
