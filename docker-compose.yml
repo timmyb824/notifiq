@@ -1,0 +1,29 @@
+services:
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: guest
+  #     RABBITMQ_DEFAULT_PASS: guest
+
+  notifiq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: notifiq
+    # env_file:
+    #   - .env
+    environment:
+      - RABBITMQ_HOST=192.168.86.221
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=tbryant
+      - RABBITMQ_PASS=alina2farthest2shipped7asgard
+      - RABBITMQ_QUEUE=test.alerts
+      - APPRISE_NTFY_URL=ntfys://tbryant:tk_Plym0uth113109@ntfy.timmybtech.com/homelab-server-updates
+    # depends_on:
+    #   - rabbitmq
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
