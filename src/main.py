@@ -1,4 +1,7 @@
 import json
+from src.logging_config import setup_logging
+
+setup_logging()
 import logging
 import pika
 from src.config import Config
@@ -6,9 +9,6 @@ from src.routing import get_target_notifiers
 from src.notifiers.apprise_notifier import AppriseNotifier
 from src.notifiers.loki_notifier import LokiNotifier
 from src.health import start_health_server
-
-# Setup logging
-logging.basicConfig(level=logging.INFO)
 
 # Initialize config
 config = Config()

@@ -1,5 +1,8 @@
 import apprise
 from typing import List, Any
+from src.logging_config import setup_logging
+
+setup_logging()
 from .base import BaseNotifier
 
 
