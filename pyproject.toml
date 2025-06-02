@@ -15,7 +15,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["autopep8", "black", "pytest", "pre-commit", "isort"]
+dev = [
+    "autopep8",
+    "black",
+    "pytest",
+    "pre-commit",
+    "isort",
+    "python-semantic-release",
+]
 
 [tool.uv]
 default-groups = []
