@@ -4,4 +4,4 @@ version = "0.1.0"
 description = "A modular notification routing hub for RabbitMQ, Apprise, Loki, and more."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["pika", "apprise", "python-dotenv", "requests", "flask"]
+dependencies = ["pika", "apprise", "python-dotenv", "requests", "flask", "python-json-logger"]
