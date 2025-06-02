@@ -1,10 +1,11 @@
+from typing import Any
+
 from src.logging_config import setup_logging
 
 setup_logging()
-from typing import List, Dict, Any
 
 
-def get_target_notifiers(message: Dict[str, Any]) -> List[str]:
+def get_target_notifiers(message: dict[str, Any]) -> list[str]:
     """
     Determine which notifiers to use for a given message.
     Args:
