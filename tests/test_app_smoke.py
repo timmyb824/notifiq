@@ -20,7 +20,7 @@ def test_health_and_ready():
     Smoke test: start the app, check /healthz and /readyz endpoints.
     """
     # Start the app as a subprocess
-    proc = subprocess.Popen(["python", "-m", "src.main"])
+    proc = subprocess.Popen(["uv", "run", "python", "-m", "src.main"])
     try:
         base_url = "http://127.0.0.1:8080"
         assert wait_for_healthz(f"{base_url}/healthz"), "/healthz did not become ready"

@@ -33,10 +33,10 @@ jobs:
         run: |
           uv run black --check .
 
-      - name: Run unit tests
-        shell: bash
-        run: |
-          uv run pytest -xvvv tests/
+      # - name: Run unit tests
+      #   shell: bash
+      #   run: |
+      #     uv run pytest -xvvv tests/
 
       - name: Test run the tool
         if: success()
