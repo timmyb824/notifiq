@@ -90,7 +90,7 @@ restart_argocd_deployment() {
 }
 
 build_and_push_image
-refresh_argocd_app
-restart_argocd_deployment
+# refresh_argocd_app
+# restart_argocd_deployment
 
 msg_ok "Deployment script completed successfully!"
