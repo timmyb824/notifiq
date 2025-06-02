@@ -1,12 +1,18 @@
+from typing import Any
+
 import apprise
-from typing import List, Any
+
 from src.logging_config import setup_logging
+from src.notifiers.base import BaseNotifier
 
 setup_logging()
-from .base import BaseNotifier
 
 
 class AppriseNotifier(BaseNotifier):
+    """
+    Apprise notifier.
+    """
+
     def __init__(self, urls: dict):
         """
         Args:
@@ -15,8 +21,16 @@ class AppriseNotifier(BaseNotifier):
         self.urls = urls
 
     def send(
-        self, title: str, message: str, channels: List[str], **kwargs: Any
+        self, title: str, message: str, channels: list[str], **kwargs: Any
     ) -> None:
+        """
+        Send a notification using Apprise.
+        Args:
+            title: The notification title.
+            message: The notification body.
+            channels: List of channel names (e.g., ["ntfy", "loki"])
+            kwargs: Extra arguments for the notifier.
+        """
         aps = apprise.Apprise()
         for channel in channels:
             if url := self.urls.get(channel):

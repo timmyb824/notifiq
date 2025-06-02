@@ -22,15 +22,7 @@ class Config:
             "discord": os.environ.get("APPRISE_DISCORD_URL"),
             "email": os.environ.get("APPRISE_EMAIL_URL"),
             "mattermost": os.environ.get("APPRISE_MATTERMOST_URL"),
-            # Add more as needed
         }
 
         # Loki notifier URL
         self.loki_url = os.environ.get("LOKI_PUSH_URL")
-
-        # Add more config as needed
-
-
-# Usage:
-# from config import Config
-# config = Config()

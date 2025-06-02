@@ -1,7 +1,8 @@
-import os
-import json
-import pika
 import argparse
+import json
+import os
+
+import pika
 
 
 def main():

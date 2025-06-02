@@ -1,7 +1,72 @@
 [project]
 name = "notifiq"
 version = "0.1.0"
+authors = [{ name = "Timothy Bryant", email = "timothy.bryant@timmybtech.com" }]
 description = "A modular notification routing hub for RabbitMQ, Apprise, Loki, and more."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["pika", "apprise", "python-dotenv", "requests", "flask", "python-json-logger"]
+dependencies = [
+    "pika",
+    "apprise",
+    "python-dotenv",
+    "requests",
+    "flask",
+    "python-json-logger",
+]
+
+[project.optional-dependencies]
+dev = ["autopep8", "black", "pytest", "pre-commit", "isort"]
+
+[tool.uv]
+default-groups = []
+package = true
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+
+[project.scripts]
+notifiq = "src.main:main"
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = [
+    "build",
+    "chore",
+    "refactor",
+    "fix",
+    "perf",
+    "style",
+    "docs",
+    "ci",
+    "test",
+    "feat",
+    ":boom:",
+    "BREAKING_CHANGE",
+]
+major_tags = [":boom:", "BREAKING_CHANGE"]
+minor_tags = ["feat"]
+patch_tags = [
+    "fix",
+    "perf",
+    "style",
+    "docs",
+    "ci",
+    "test",
+    "refactor",
+    "chore",
+    "build",
+]
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+branch = "main"
+changelog_file = "CHANGELOG.md"
+build_command = "uv build"
+dist_path = "dist/"
+upload_to_vcs_release = true
+upload_to_pypi = false
+remove_dist = false
+patch_without_tag = true
+
+[tool.setuptools.packages.find]
+include = ["src*"]
+exclude = ["ARCHIVE*", "tests*", "build*"]
