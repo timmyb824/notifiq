@@ -54,6 +54,26 @@ Set these environment variables:
 
 See `.env.example` for details.
 
+## Dynamic Channel/Topic Routing
+
+You can override the default Mattermost channel or Ntfy topic for each message by including `mattermost_channel` or `ntfy_topic` in your message payload. This allows you to send notifications to different destinations dynamically.
+
+**Example message JSON:**
+
+```json
+{
+  "title": "Alert",
+  "message": "Something happened",
+  "channels": ["ntfy", "mattermost"],
+  "ntfy_topic": "devops-updates",
+  "mattermost_channel": "devops"
+}
+```
+
+- For Ntfy: `ntfy_topic` will replace the topic in the Apprise URL for this message only.
+- For Mattermost: `mattermost_channel` will add or replace the `channel` query parameter in the Apprise URL for this message only.
+- If not specified, the default from your environment is used.
+
 ## Health & Readiness
 
 - `GET /healthz` — always returns 200
