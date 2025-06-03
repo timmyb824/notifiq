@@ -37,13 +37,14 @@ if config.loki_url:
     notifiers["loki"] = LokiNotifier(config.loki_url)
 
 
-def dispatch_notification(title: str, message: str, channels: list[str]):
+def dispatch_notification(title: str, message: str, channels: list[str], **kwargs):
     """
     Dispatch a notification to the appropriate notifier(s).
     Args:
         title: Notification title
         message: Notification message
         channels: List of channels to notify
+        kwargs: Extra arguments for dynamic routing (e.g., ntfy_topic, mattermost_channel)
     """
     apprise_channels = []
     loki_needed = False
@@ -56,9 +57,9 @@ def dispatch_notification(title: str, message: str, channels: list[str]):
         else:
             apprise_channels.append(channel)
     if apprise_channels:
-        notifiers["apprise"].send(title, message, apprise_channels)
+        notifiers["apprise"].send(title, message, apprise_channels, **kwargs)
     if mattermost_needed and "mattermost" in notifiers:
-        notifiers["mattermost"].send(title, message, ["mattermost"])
+        notifiers["mattermost"].send(title, message, ["mattermost"], **kwargs)
     if loki_needed and "loki" in notifiers:
         notifiers["loki"].send(title, message)
 
@@ -83,8 +84,12 @@ def callback(
         title = msg.get("title", "Notification")
         message = msg.get("message", str(msg))
         channels = get_target_notifiers(msg)
+        # Pass all extra fields for dynamic routing (e.g., ntfy_topic, mattermost_channel)
+        extra = {
+            k: v for k, v in msg.items() if k not in {"title", "message", "channels"}
+        }
         logging.info(f"Dispatching '{title}' to {channels}: {message}")
-        dispatch_notification(title, message, channels)
+        dispatch_notification(title, message, channels, **extra)
     except Exception:
         logging.exception("Failed to process message")
 

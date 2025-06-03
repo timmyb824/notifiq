@@ -42,23 +42,29 @@ class AppriseNotifier(BaseNotifier):
 
             # Dynamic ntfy topic override
             if channel == "ntfy" and "ntfy_topic" in kwargs:
-                # Replace the topic at the end of the URL
-                url = re.sub(r"/[^/]+$", f"/{kwargs['ntfy_topic']}", url)
+                import urllib.parse
+
+                parsed = urllib.parse.urlparse(url)
+                # Remove trailing slash, split path, replace last segment
+                path_parts = parsed.path.rstrip("/").split("/")
+                path_parts[-1] = kwargs["ntfy_topic"]
+                new_path = "/".join(path_parts)
+                url = urllib.parse.urlunparse(parsed._replace(path=new_path))
 
             # Dynamic mattermost channel override
             if channel == "mattermost" and "mattermost_channel" in kwargs:
-                if "?" in url:
+                if "?" in str(url):
                     # Replace or add channel param
-                    if re.search(r"[?&]channel=", url):
+                    if re.search(r"[?&]channel=", str(url)):
                         url = re.sub(
                             r"([?&])channel=[^&]*",
                             f"\\1channel={kwargs['mattermost_channel']}",
-                            url,
+                            str(url),
                         )
                     else:
-                        url += f"&channel={kwargs['mattermost_channel']}"
+                        url = f"{str(url)}&channel={kwargs['mattermost_channel']}"
                 else:
-                    url += f"?channel={kwargs['mattermost_channel']}"
+                    url = f"{str(url)}?channel={kwargs['mattermost_channel']}"
 
             aps.add(url)
         aps.notify(title=title, body=message)
