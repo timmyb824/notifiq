@@ -1,6 +1,6 @@
 [project]
 name = "notifiq"
-version = "1.0.0"
+version = "1.1.0"
 authors = [{ name = "Timothy Bryant", email = "timothy.bryant@timmybtech.com" }]
 description = "A modular notification routing hub for RabbitMQ, Apprise, Loki, and more."
 readme = "README.md"
