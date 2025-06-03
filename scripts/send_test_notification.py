@@ -22,6 +22,14 @@ def main():
         default="ntfy",
         help="Comma-separated list of channels (e.g. ntfy,discord,loki)",
     )
+    parser.add_argument(
+        "--ntfy_topic",
+        help="Override the default Ntfy topic",
+    )
+    parser.add_argument(
+        "--mattermost_channel",
+        help="Override the default Mattermost channel",
+    )
     args = parser.parse_args()
 
     rabbitmq_host = os.environ.get("RABBITMQ_HOST", "localhost")
@@ -37,6 +45,11 @@ def main():
         "message": args.message,
         "channels": [c.strip() for c in args.channels.split(",") if c.strip()],
     }
+
+    if args.ntfy_topic:
+        msg["ntfy_topic"] = args.ntfy_topic
+    if args.mattermost_channel:
+        msg["mattermost_channel"] = args.mattermost_channel
 
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
