@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.3 (2025-06-03)
+
+### Chores
+
+- Add missing env to envrc
+  ([`d427255`](https://github.com/timmyb824/notifiq/commit/d4272554fc99618473505deabd5417be3229b81a))
+
+
 ## v1.1.2 (2025-06-03)
 
 ### Code Style
