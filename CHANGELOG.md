@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.4 (2025-06-03)
+
+### Bug Fixes
+
+- Ensure extra fields are passed through
+  ([`517f7fb`](https://github.com/timmyb824/notifiq/commit/517f7fbbca5664dbf45175b9dbd2924e46c50758))
+
+
 ## v1.1.3 (2025-06-03)
 
 ### Chores
