@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.1 (2025-06-03)
+
+### Chores
+
+- Update mattermost env
+  ([`a239a08`](https://github.com/timmyb824/notifiq/commit/a239a08f144746e2098ea38fbadb2a31881b2fbb))
+
+
 ## v1.1.0 (2025-06-03)
 
 ### Features
