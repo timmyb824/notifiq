@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.2 (2025-06-03)
+
+### Code Style
+
+- Enable argocd actions in deploy script
+  ([`f0d1b00`](https://github.com/timmyb824/notifiq/commit/f0d1b0030586ee1f02b4dbbbbc4933b4369e6810))
+
+
 ## v1.1.1 (2025-06-03)
 
 ### Chores
