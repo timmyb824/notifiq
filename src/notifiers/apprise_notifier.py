@@ -31,11 +31,34 @@ class AppriseNotifier(BaseNotifier):
             channels: List of channel names (e.g., ["ntfy", "loki"])
             kwargs: Extra arguments for the notifier.
         """
+        import re
+
         aps = apprise.Apprise()
         for channel in channels:
-            if url := self.urls.get(channel):
-                aps.add(url)
-            else:
+            url = self.urls.get(channel)
+            if not url:
                 # Optionally, log missing channel
-                pass
+                continue
+
+            # Dynamic ntfy topic override
+            if channel == "ntfy" and "ntfy_topic" in kwargs:
+                # Replace the topic at the end of the URL
+                url = re.sub(r"/[^/]+$", f"/{kwargs['ntfy_topic']}", url)
+
+            # Dynamic mattermost channel override
+            if channel == "mattermost" and "mattermost_channel" in kwargs:
+                if "?" in url:
+                    # Replace or add channel param
+                    if re.search(r"[?&]channel=", url):
+                        url = re.sub(
+                            r"([?&])channel=[^&]*",
+                            f"\\1channel={kwargs['mattermost_channel']}",
+                            url,
+                        )
+                    else:
+                        url += f"&channel={kwargs['mattermost_channel']}"
+                else:
+                    url += f"?channel={kwargs['mattermost_channel']}"
+
+            aps.add(url)
         aps.notify(title=title, body=message)
