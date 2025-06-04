@@ -52,7 +52,10 @@ class NtfyDirectNotifier(BaseNotifier):
             kwargs: Extra arguments for the notifier (e.g., markdown, tags, priority, etc.)
         """
         import logging
-        logging.info("[ntfy-direct] send() called with title='%s' channels=%s", title, channels)
+
+        logging.info(
+            "[ntfy-direct] send() called with title='%s' channels=%s", title, channels
+        )
         headers = {"X-Markdown": "true"}
         if "headers" in kwargs:
             headers |= kwargs["headers"]
@@ -95,6 +98,10 @@ class NtfyDirectNotifier(BaseNotifier):
                         resp.text,
                     )
                 else:
-                    logging.info("[ntfy-direct] Notification posted successfully: status=%s url=%s", resp.status_code, url_to_use)
+                    logging.info(
+                        "[ntfy-direct] Notification posted successfully: status=%s url=%s",
+                        resp.status_code,
+                        url_to_use,
+                    )
             except Exception as e:
                 logging.error("ntfy-direct exception: url=%s error=%s", url_to_use, e)
