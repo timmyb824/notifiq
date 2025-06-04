@@ -62,10 +62,24 @@ class NtfyDirectNotifier(BaseNotifier):
                 req_headers[k] = v
         # Only send if 'ntfy-direct' is in channels
         if "ntfy-direct" in channels and self.url:
+            url_to_use = self.url
+            # If ntfy_topic is provided, override the topic in the URL
+            ntfy_topic = kwargs.get("ntfy_topic")
+            if ntfy_topic:
+                # Replace the last segment of the path with the new topic
+                parsed = urlparse(url_to_use)
+                # Remove trailing slash for clean split
+                path_parts = parsed.path.rstrip("/").split("/")
+                if len(path_parts) > 1:
+                    path_parts[-1] = ntfy_topic
+                elif len(path_parts) == 1:
+                    path_parts[0] = ntfy_topic
+                new_path = "/" + "/".join(path_parts)
+                url_to_use = f"{parsed.scheme}://{parsed.hostname}{f':{parsed.port}' if parsed.port else ''}{new_path}"
             data = message
             with contextlib.suppress(Exception):
                 requests.post(
-                    self.url,
+                    url_to_use,
                     data=data.encode("utf-8"),
                     headers=req_headers,
                     timeout=5,
