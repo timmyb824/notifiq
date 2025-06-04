@@ -55,18 +55,17 @@ class NtfyDirectNotifier(BaseNotifier):
         if "headers" in kwargs:
             headers |= kwargs["headers"]
         req_headers = headers.copy()
-        req_headers["Title"] = title
-        req_headers["Content-Type"] = "text/plain; charset=utf-8"
+        req_headers["Content-Type"] = "application/json"
         for k, v in kwargs.items():
             if k.startswith("X-"):
                 req_headers[k] = v
         # Only send if 'ntfy-direct' is in channels
         if "ntfy-direct" in channels and self.url:
             url_to_use = self.url
+            topic_to_use = None
             if ntfy_topic := kwargs.get("ntfy_topic"):
                 # Replace the last segment of the path with the new topic
                 parsed = urlparse(url_to_use)
-                # Remove trailing slash for clean split
                 path_parts = parsed.path.rstrip("/").split("/")
                 if len(path_parts) > 1:
                     path_parts[-1] = ntfy_topic
@@ -74,10 +73,23 @@ class NtfyDirectNotifier(BaseNotifier):
                     path_parts[0] = ntfy_topic
                 new_path = "/" + "/".join(path_parts)
                 url_to_use = f"{parsed.scheme}://{parsed.hostname}{f':{parsed.port}' if parsed.port else ''}{new_path}"
+                topic_to_use = ntfy_topic
+            else:
+                # Extract topic from URL path
+                parsed = urlparse(url_to_use)
+                topic_to_use = (
+                    parsed.path.strip("/").split("/")[-1] if parsed.path else None
+                )
+
+            payload = {
+                "topic": topic_to_use,
+                "title": title,
+                "message": message,
+            }
             try:
                 resp = requests.post(
                     url_to_use,
-                    data=message,
+                    json=payload,
                     headers=req_headers,
                     timeout=5,
                     auth=self.auth,
