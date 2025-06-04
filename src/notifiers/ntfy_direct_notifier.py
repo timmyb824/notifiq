@@ -61,22 +61,16 @@ class NtfyDirectNotifier(BaseNotifier):
                 req_headers[k] = v
         # Only send if 'ntfy-direct' is in channels
         if "ntfy-direct" in channels and self.url:
-            url_to_use = self.url
-            topic_to_use = None
+            # Always POST to /publish endpoint for JSON API
+            parsed = urlparse(self.url)
+            base_url = f"{parsed.scheme}://{parsed.hostname}{f':{parsed.port}' if parsed.port else ''}"
+            url_to_use = f"{base_url}/publish"
+
+            # Determine topic
             if ntfy_topic := kwargs.get("ntfy_topic"):
-                # Replace the last segment of the path with the new topic
-                parsed = urlparse(url_to_use)
-                path_parts = parsed.path.rstrip("/").split("/")
-                if len(path_parts) > 1:
-                    path_parts[-1] = ntfy_topic
-                elif len(path_parts) == 1:
-                    path_parts[0] = ntfy_topic
-                new_path = "/" + "/".join(path_parts)
-                url_to_use = f"{parsed.scheme}://{parsed.hostname}{f':{parsed.port}' if parsed.port else ''}{new_path}"
                 topic_to_use = ntfy_topic
             else:
-                # Extract topic from URL path
-                parsed = urlparse(url_to_use)
+                # Extract topic from original URL path
                 topic_to_use = (
                     parsed.path.strip("/").split("/")[-1] if parsed.path else None
                 )
