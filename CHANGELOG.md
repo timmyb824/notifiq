@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.4 (2025-06-04)
+
+### Code Style
+
+- Add Content-Type to request headers in NtfyDirectNotifier class
+  ([`0916774`](https://github.com/timmyb824/notifiq/commit/0916774d3e522f9a19b6be8048a7f9355ff175d9))
+
+
 ## v1.2.3 (2025-06-04)
 
 ### Code Style
