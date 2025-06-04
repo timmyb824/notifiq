@@ -1,6 +1,7 @@
 from typing import Any, Optional
 from urllib.parse import urlparse, unquote
 import requests
+import json
 
 from src.notifiers.base import BaseNotifier
 
@@ -85,8 +86,11 @@ class NtfyDirectNotifier(BaseNotifier):
             try:
                 resp = requests.post(
                     url_to_use,
-                    json=payload,
-                    headers=req_headers,
+                    data=json.dumps(payload),
+                    headers={
+                        **req_headers,
+                        "Content-Type": "application/json; charset=utf-8",
+                    },
                     timeout=5,
                     auth=self.auth,
                 )
