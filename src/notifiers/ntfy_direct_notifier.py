@@ -1,6 +1,7 @@
-from typing import Any, Optional
-from urllib.parse import urlparse, unquote
 import contextlib
+from typing import Any, Optional
+from urllib.parse import unquote, urlparse
+
 import requests
 
 from src.notifiers.base import BaseNotifier
