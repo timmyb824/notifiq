@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Optional
+from typing import Optional
 
 
 class Config:
@@ -17,7 +17,7 @@ class Config:
         self.rabbitmq_vhost = os.environ.get("RABBITMQ_VHOST", "/")
 
         # Apprise notifier URLs (channels)
-        self.apprise_urls: Dict[str, Optional[str]] = {
+        self.apprise_urls: dict[str, Optional[str]] = {
             "ntfy": os.environ.get("APPRISE_NTFY_URL"),
             "discord": os.environ.get("APPRISE_DISCORD_URL"),
             "email": os.environ.get("APPRISE_EMAIL_URL"),
