@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.6 (2025-06-04)
+
+### Refactoring
+
+- Ntfy direct to use the ntfy json api instead of /topic
+  ([`9391eff`](https://github.com/timmyb824/notifiq/commit/9391effff0d7d275eddba17c9bf5b126bff6a33d))
+
+
 ## v1.2.5 (2025-06-04)
 
 ### Bug Fixes
