@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.9 (2025-06-04)
+
+### Code Style
+
+- Use json dumps for the payload
+  ([`7dc4813`](https://github.com/timmyb824/notifiq/commit/7dc48139bb24eb633c62bc4e2b3627c42bb1ac2e))
+
+
 ## v1.2.8 (2025-06-04)
 
 ### Code Style
