@@ -42,6 +42,8 @@ notifiq supports sending notifications directly to [ntfy](https://ntfy.sh) using
    - By default, messages sent via `ntfy-direct` will include the `X-Markdown: true` header, enabling markdown rendering in ntfy clients.
    - You can add custom headers by passing them in the `headers` argument (as a dict) to the notification payload.
 
+> **Note:** Markdown rendering support may vary by ntfy client. The official web and Android clients support markdown, but the iOS/iPad app may not (or may have limited support), which could result in raw markdown (e.g., `**bold**`) being displayed instead of formatted text.
+
 **Example Python usage:**
 
 ```python
