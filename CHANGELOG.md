@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.7 (2025-06-04)
+
+### Refactoring
+
+- Simplify URL handling and topic determination logic in NtfyDirectNotifier clas
+  ([`ccf8d63`](https://github.com/timmyb824/notifiq/commit/ccf8d63eb29fa272f6a15fb4cf16676bbc0e53bd))
+
+
 ## v1.2.6 (2025-06-04)
 
 ### Refactoring
