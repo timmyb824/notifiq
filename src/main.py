@@ -15,6 +15,7 @@ from src.logging_config import setup_logging
 from src.notifiers.apprise_notifier import AppriseNotifier
 from src.notifiers.loki_notifier import LokiNotifier
 from src.notifiers.mattermost_notifier import MattermostNotifier
+from src.notifiers.ntfy_direct_notifier import NtfyDirectNotifier
 from src.routing import get_target_notifiers
 
 setup_logging()
@@ -30,11 +31,12 @@ shutdown_requested = False
 # Initialize notifiers
 notifiers = {}
 notifiers["apprise"] = AppriseNotifier(config.apprise_urls)
-if config.apprise_urls.get("mattermost"):
-    notifiers["mattermost"] = MattermostNotifier(config.apprise_urls["mattermost"])  # type: ignore
-# Loki notifier
-if config.loki_url:
-    notifiers["loki"] = LokiNotifier(config.loki_url)
+if ntfy_url := config.apprise_urls.get("ntfy"):
+    notifiers["ntfy-direct"] = NtfyDirectNotifier(ntfy_url)  # type: ignore
+if mattermost_url := config.apprise_urls.get("mattermost"):
+    notifiers["mattermost"] = MattermostNotifier(mattermost_url)  # type: ignore
+if loki_url := config.loki_url:
+    notifiers["loki"] = LokiNotifier(loki_url)  # type: ignore
 
 
 def dispatch_notification(title: str, message: str, channels: list[str], **kwargs):
@@ -47,6 +49,7 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
         kwargs: Extra arguments for dynamic routing (e.g., ntfy_topic, mattermost_channel)
     """
     apprise_channels = []
+    ntfy_direct_needed = False
     loki_needed = False
     mattermost_needed = False
     for channel in channels:
@@ -54,14 +57,18 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
             loki_needed = True
         elif channel == "mattermost":
             mattermost_needed = True
+        elif channel == "ntfy-direct":
+            ntfy_direct_needed = True
         else:
             apprise_channels.append(channel)
     if apprise_channels:
         notifiers["apprise"].send(title, message, apprise_channels, **kwargs)
+    if ntfy_direct_needed and "ntfy-direct" in notifiers:
+        notifiers["ntfy-direct"].send(title, message, ["ntfy-direct"], **kwargs)
     if mattermost_needed and "mattermost" in notifiers:
         notifiers["mattermost"].send(title, message, ["mattermost"], **kwargs)
     if loki_needed and "loki" in notifiers:
-        notifiers["loki"].send(title, message)
+        notifiers["loki"].send(title, message, **kwargs)
 
 
 # It is standard practice to include the unused arguments in the callback even if they are not used
@@ -95,7 +102,7 @@ def callback(
 
 
 def handle_shutdown(signum: int, frame: Any) -> None:
-    global shutdown_requested
+    global shutdown_requested  # pylint: disable=global-statement
     logging.info(f"Received signal {signum}, shutting down gracefully...")
     shutdown_requested = True
 
