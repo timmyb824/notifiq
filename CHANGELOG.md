@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.2.0 (2025-06-04)
+
+### Code Style
+
+- Add missing Any
+  ([`941f723`](https://github.com/timmyb824/notifiq/commit/941f7234f783206030f201c4d44d02bd66c5e564))
+
+### Features
+
+- Implement ntfy direct using request instead of apprise to get markdown support
+  ([`844600b`](https://github.com/timmyb824/notifiq/commit/844600bdb0edb7a77b3a25b8114e38453809c443))
+
+
 ## v1.1.4 (2025-06-03)
 
 ### Bug Fixes
