@@ -65,8 +65,6 @@ class NtfyDirectNotifier(BaseNotifier):
         if "ntfy-direct" in channels and self.url:
             parsed = urlparse(self.url)
             base_url = f"{parsed.scheme}://{parsed.hostname}{f':{parsed.port}' if parsed.port else ''}"
-            url_to_use = f"{base_url}/publish"
-
             # Determine topic
             if ntfy_topic := kwargs.get("ntfy_topic"):
                 topic_to_use = ntfy_topic
@@ -74,13 +72,13 @@ class NtfyDirectNotifier(BaseNotifier):
                 topic_to_use = (
                     parsed.path.strip("/").split("/")[-1] if parsed.path else None
                 )
+            url_to_use = f"{base_url}/{topic_to_use}"
 
             payload = {
-                "topic": topic_to_use,
                 "title": title,
                 "message": message,
             }
-            logging.info("[ntfy-direct] Posting to %s topic=%s", url_to_use, topic_to_use)
+            logging.info("[ntfy-direct] Posting to %s", url_to_use)
             try:
                 resp = requests.post(
                     url_to_use,
