@@ -2,6 +2,23 @@
 
 <!-- version list -->
 
+## v1.2.2 (2025-06-04)
+
+### Chores
+
+- Change ntfy env in encrypted file
+  ([`a190712`](https://github.com/timmyb824/notifiq/commit/a19071220f53222f9d7bf67dcbdf097a23668b19))
+
+- Change ntfy env in encrypted file
+  ([`abb2072`](https://github.com/timmyb824/notifiq/commit/abb20721f00866b9ffd526b140457b36a2bd00e1))
+
+- Update pre-commit hook
+  ([`332a5ed`](https://github.com/timmyb824/notifiq/commit/332a5ed81a6a13f1d2318cd2dafe983283042651))
+
+- Update pre-commit hook
+  ([`5a7991e`](https://github.com/timmyb824/notifiq/commit/5a7991e54f4899a891bb7d677ed2ca633fc31ad2))
+
+
 ## v1.2.1 (2025-06-04)
 
 ### Refactoring
