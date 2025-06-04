@@ -51,6 +51,8 @@ class NtfyDirectNotifier(BaseNotifier):
             channels: List of channel names (should include "ntfy-direct" if using this notifier)
             kwargs: Extra arguments for the notifier (e.g., markdown, tags, priority, etc.)
         """
+        import logging
+        logging.info("[ntfy-direct] send() called with title='%s' channels=%s", title, channels)
         headers = {"X-Markdown": "true"}
         if "headers" in kwargs:
             headers |= kwargs["headers"]
@@ -61,7 +63,6 @@ class NtfyDirectNotifier(BaseNotifier):
                 req_headers[k] = v
         # Only send if 'ntfy-direct' is in channels
         if "ntfy-direct" in channels and self.url:
-            # Always POST to /publish endpoint for JSON API
             parsed = urlparse(self.url)
             base_url = f"{parsed.scheme}://{parsed.hostname}{f':{parsed.port}' if parsed.port else ''}"
             url_to_use = f"{base_url}/publish"
@@ -70,7 +71,6 @@ class NtfyDirectNotifier(BaseNotifier):
             if ntfy_topic := kwargs.get("ntfy_topic"):
                 topic_to_use = ntfy_topic
             else:
-                # Extract topic from original URL path
                 topic_to_use = (
                     parsed.path.strip("/").split("/")[-1] if parsed.path else None
                 )
@@ -80,6 +80,7 @@ class NtfyDirectNotifier(BaseNotifier):
                 "title": title,
                 "message": message,
             }
+            logging.info("[ntfy-direct] Posting to %s topic=%s", url_to_use, topic_to_use)
             try:
                 resp = requests.post(
                     url_to_use,
@@ -89,15 +90,13 @@ class NtfyDirectNotifier(BaseNotifier):
                     auth=self.auth,
                 )
                 if not resp.ok:
-                    import logging
-
                     logging.error(
                         "ntfy-direct failed: status=%s url=%s response=%s",
                         resp.status_code,
                         url_to_use,
                         resp.text,
                     )
+                else:
+                    logging.info("[ntfy-direct] Notification posted successfully: status=%s url=%s", resp.status_code, url_to_use)
             except Exception as e:
-                import logging
-
                 logging.error("ntfy-direct exception: url=%s error=%s", url_to_use, e)
