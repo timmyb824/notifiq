@@ -1,4 +1,3 @@
-import contextlib
 from typing import Any, Optional
 from urllib.parse import urlparse, unquote
 import requests
@@ -57,6 +56,7 @@ class NtfyDirectNotifier(BaseNotifier):
             headers |= kwargs["headers"]
         req_headers = headers.copy()
         req_headers["Title"] = title
+        req_headers["Content-Type"] = "text/plain; charset=utf-8"
         for k, v in kwargs.items():
             if k.startswith("X-"):
                 req_headers[k] = v
