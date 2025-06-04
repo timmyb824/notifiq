@@ -2,6 +2,20 @@
 
 <!-- version list -->
 
+## v1.2.8 (2025-06-04)
+
+### Code Style
+
+- Add logging for debugging
+  ([`3c9fdd8`](https://github.com/timmyb824/notifiq/commit/3c9fdd871d5855eca374749c7b68153de983427c))
+
+- Attempt to send message correctly to apprise
+  ([`b3fe010`](https://github.com/timmyb824/notifiq/commit/b3fe0100c4c3c055587a490ef108a0a7044463f5))
+
+- Black formatting changes
+  ([`b1baf88`](https://github.com/timmyb824/notifiq/commit/b1baf88c164a3348c3de432c8847a0fea63c0b6e))
+
+
 ## v1.2.7 (2025-06-04)
 
 ### Refactoring
