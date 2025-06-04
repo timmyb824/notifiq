@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.5 (2025-06-04)
+
+### Bug Fixes
+
+- Fix encoding issue in request data assignment
+  ([`ea6c516`](https://github.com/timmyb824/notifiq/commit/ea6c516d48e8023f1c88818b31e879577c554fda))
+
+
 ## v1.2.4 (2025-06-04)
 
 ### Code Style
