@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.12 (2025-06-04)
+
+### Refactoring
+
+- Use httpx instead of requests in pursuit of emoji support
+  ([`e471c7d`](https://github.com/timmyb824/notifiq/commit/e471c7d12336efcf383ee45843ceca966b3f8217))
+
+
 ## v1.2.11 (2025-06-04)
 
 ### Code Style
