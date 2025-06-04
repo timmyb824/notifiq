@@ -1,7 +1,6 @@
 import contextlib
 from typing import Any, Optional
-from urllib.parse import unquote, urlparse
-
+from urllib.parse import urlparse, unquote
 import requests
 
 from src.notifiers.base import BaseNotifier
@@ -64,9 +63,7 @@ class NtfyDirectNotifier(BaseNotifier):
         # Only send if 'ntfy-direct' is in channels
         if "ntfy-direct" in channels and self.url:
             url_to_use = self.url
-            # If ntfy_topic is provided, override the topic in the URL
-            ntfy_topic = kwargs.get("ntfy_topic")
-            if ntfy_topic:
+            if ntfy_topic := kwargs.get("ntfy_topic"):
                 # Replace the last segment of the path with the new topic
                 parsed = urlparse(url_to_use)
                 # Remove trailing slash for clean split
@@ -78,11 +75,24 @@ class NtfyDirectNotifier(BaseNotifier):
                 new_path = "/" + "/".join(path_parts)
                 url_to_use = f"{parsed.scheme}://{parsed.hostname}{f':{parsed.port}' if parsed.port else ''}{new_path}"
             data = message
-            with contextlib.suppress(Exception):
-                requests.post(
+            try:
+                resp = requests.post(
                     url_to_use,
                     data=data.encode("utf-8"),
                     headers=req_headers,
                     timeout=5,
                     auth=self.auth,
                 )
+                if not resp.ok:
+                    import logging
+
+                    logging.error(
+                        "ntfy-direct failed: status=%s url=%s response=%s",
+                        resp.status_code,
+                        url_to_use,
+                        resp.text,
+                    )
+            except Exception as e:
+                import logging
+
+                logging.error("ntfy-direct exception: url=%s error=%s", url_to_use, e)
