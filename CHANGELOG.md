@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.3 (2025-06-04)
+
+### Code Style
+
+- Add logging for ntfy-direct
+  ([`528eb6f`](https://github.com/timmyb824/notifiq/commit/528eb6f6457492a43fae7591978d75aa9ffbae34))
+
+
 ## v1.2.2 (2025-06-04)
 
 ### Chores
