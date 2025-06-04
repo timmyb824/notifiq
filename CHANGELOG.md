@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.10 (2025-06-04)
+
+### Code Style
+
+- Black formatting changes
+  ([`f50749b`](https://github.com/timmyb824/notifiq/commit/f50749bb59bf271a82e709f7f8c6a6cf60312685))
+
+
 ## v1.2.9 (2025-06-04)
 
 ### Code Style
