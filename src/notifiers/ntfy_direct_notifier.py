@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 from urllib.parse import urlparse, unquote
 import contextlib
 import requests
