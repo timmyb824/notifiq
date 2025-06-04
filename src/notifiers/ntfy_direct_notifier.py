@@ -74,11 +74,10 @@ class NtfyDirectNotifier(BaseNotifier):
                     path_parts[0] = ntfy_topic
                 new_path = "/" + "/".join(path_parts)
                 url_to_use = f"{parsed.scheme}://{parsed.hostname}{f':{parsed.port}' if parsed.port else ''}{new_path}"
-            data = message
             try:
                 resp = requests.post(
                     url_to_use,
-                    data=data.encode("utf-8"),
+                    data=message,
                     headers=req_headers,
                     timeout=5,
                     auth=self.auth,
