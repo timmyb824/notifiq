@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.1 (2025-06-04)
+
+### Refactoring
+
+- Update URL handling in NtfyDirectNotifier for topic override
+  ([`2843166`](https://github.com/timmyb824/notifiq/commit/284316621b98eef302a7d78ddf9d5acd696989ec))
+
+
 ## v1.2.0 (2025-06-04)
 
 ### Code Style
