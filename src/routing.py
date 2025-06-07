@@ -21,6 +21,3 @@ def get_target_notifiers(message: dict[str, Any]) -> list[str]:
         # Allow comma-separated string
         return [c.strip() for c in channels.split(",") if c.strip()]
     return channels if isinstance(channels, list) else ["ntfy"]
-
-
-# For advanced routing, add logic here (e.g., by queue, type, or source)
