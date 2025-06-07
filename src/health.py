@@ -9,7 +9,17 @@ from src.logging_config import setup_logging
 
 setup_logging()
 
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+
 app = Flask(__name__)
+
+
+@app.route("/metrics")
+def metrics():
+    """
+    Prometheus metrics endpoint.
+    """
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 @app.route("/healthz")

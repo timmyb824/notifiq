@@ -3,11 +3,13 @@ import json
 import logging
 import signal
 import sys
+import time
 from typing import Any
 
 import pika
 from pika.channel import Channel
 from pika.spec import Basic, BasicProperties
+from prometheus_client import Counter, Histogram
 
 from src.config import Config
 from src.health import start_health_server
@@ -20,15 +22,34 @@ from src.routing import get_target_notifiers
 
 setup_logging()
 
-# Start health/readiness endpoint
+# Prometheus metrics
+MESSAGES_PICKED_UP = Counter(
+    "notifiq_messages_picked_total",
+    "Total number of messages picked up from RabbitMQ.",
+    labelnames=["channel"],
+)
+MESSAGES_DELIVERED = Counter(
+    "notifiq_messages_delivered_total",
+    "Total number of messages successfully delivered.",
+    labelnames=["channel"],
+)
+MESSAGES_ERRORS = Counter(
+    "notifiq_message_errors_total",
+    "Total number of message processing or delivery errors.",
+    labelnames=["channel"],
+)
+MESSAGE_PROCESSING_TIME = Histogram(
+    "notifiq_message_processing_seconds",
+    "Time spent processing and delivering a message (seconds).",
+    labelnames=["channel"],
+)
+
 start_health_server()
 
-# Initialize config
 config = Config()
 
 shutdown_requested = False
 
-# Initialize notifiers
 notifiers = {}
 notifiers["apprise"] = AppriseNotifier(config.apprise_urls)
 if ntfy_url := config.apprise_urls.get("ntfy"):
@@ -48,27 +69,41 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
         channels: List of channels to notify
         kwargs: Extra arguments for dynamic routing (e.g., ntfy_topic, mattermost_channel)
     """
+    # For Prometheus timing
+    prom_start_time = kwargs.pop("_prom_start_time", None)
     apprise_channels = []
     ntfy_direct_needed = False
     loki_needed = False
     mattermost_needed = False
-    for channel in channels:
-        if channel == "loki":
-            loki_needed = True
-        elif channel == "mattermost":
-            mattermost_needed = True
-        elif channel == "ntfy-direct":
-            ntfy_direct_needed = True
-        else:
-            apprise_channels.append(channel)
-    if apprise_channels:
-        notifiers["apprise"].send(title, message, apprise_channels, **kwargs)
-    if ntfy_direct_needed and "ntfy-direct" in notifiers:
-        notifiers["ntfy-direct"].send(title, message, ["ntfy-direct"], **kwargs)
-    if mattermost_needed and "mattermost" in notifiers:
-        notifiers["mattermost"].send(title, message, ["mattermost"], **kwargs)
-    if loki_needed and "loki" in notifiers:
-        notifiers["loki"].send(title, message, **kwargs)
+    try:
+        for channel in channels:
+            if channel == "loki":
+                loki_needed = True
+            elif channel == "mattermost":
+                mattermost_needed = True
+            elif channel == "ntfy-direct":
+                ntfy_direct_needed = True
+            else:
+                apprise_channels.append(channel)
+        if apprise_channels:
+            notifiers["apprise"].send(title, message, apprise_channels, **kwargs)
+        if mattermost_needed and "mattermost" in notifiers:
+            notifiers["mattermost"].send(title, message, ["mattermost"], **kwargs)
+        if ntfy_direct_needed and "ntfy-direct" in notifiers:
+            notifiers["ntfy-direct"].send(title, message, ["ntfy-direct"], **kwargs)
+        if loki_needed and "loki" in notifiers:
+            notifiers["loki"].send(title, message)
+        for channel in channels:
+            MESSAGES_DELIVERED.labels(channel=channel).inc()
+        if prom_start_time is not None:
+            for channel in channels:
+                MESSAGE_PROCESSING_TIME.labels(channel=channel).observe(
+                    time.time() - prom_start_time
+                )
+    except Exception:
+        for channel in channels if "channels" in locals() else ["unknown"]:
+            MESSAGES_ERRORS.labels(channel=channel).inc()
+        logging.exception("Error delivering notification")
 
 
 # It is standard practice to include the unused arguments in the callback even if they are not used
@@ -77,7 +112,7 @@ def callback(
     method: Basic.Deliver,
     properties: BasicProperties,
     body: bytes,
-):
+):  # sourcery skip: extract-method
     """
     Callback function for RabbitMQ message processing.
     Args:
@@ -86,6 +121,7 @@ def callback(
         properties: RabbitMQ properties
         body: Message body
     """
+    start_time = time.time()
     try:
         msg = json.loads(body)
         title = msg.get("title", "Notification")
@@ -96,8 +132,15 @@ def callback(
             k: v for k, v in msg.items() if k not in {"title", "message", "channels"}
         }
         logging.info(f"Dispatching '{title}' to {channels}: {message}")
-        dispatch_notification(title, message, channels, **extra)
+        # Increment picked up for each channel
+        for channel in channels:
+            MESSAGES_PICKED_UP.labels(channel=channel).inc()
+        dispatch_notification(
+            title, message, channels, **extra, _prom_start_time=start_time
+        )
     except Exception:
+        for channel in channels if "channels" in locals() else ["unknown"]:
+            MESSAGES_ERRORS.labels(channel=channel).inc()
         logging.exception("Failed to process message")
 
 

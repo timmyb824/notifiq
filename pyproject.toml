@@ -13,6 +13,7 @@ dependencies = [
     "flask",
     "python-json-logger",
     "httpx>=0.28.1",
+    "prometheus-client>=0.22.1",
 ]
 
 [project.optional-dependencies]
