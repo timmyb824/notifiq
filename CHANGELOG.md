@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.3.0 (2025-06-07)
+
+### Features
+
+- Add prometheus metrics for counts and response time
+  ([`2f3d847`](https://github.com/timmyb824/notifiq/commit/2f3d8473e2483655654a888226c2bfa32c4676ca))
+
+
 ## v1.2.12 (2025-06-04)
 
 ### Refactoring
