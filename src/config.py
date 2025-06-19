@@ -22,6 +22,7 @@ class Config:
             "discord": os.environ.get("APPRISE_DISCORD_URL"),
             "email": os.environ.get("APPRISE_EMAIL_URL"),
             "mattermost": os.environ.get("APPRISE_MATTERMOST_URL"),
+            "gotify": os.environ.get("APPRISE_GOTIFY_URL"),
         }
 
         # Loki notifier URL

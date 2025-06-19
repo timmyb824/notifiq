@@ -102,7 +102,6 @@ Set these environment variables:
 
 - `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASS`, `RABBITMQ_QUEUE`
 - Apprise URLs: `APPRISE_NTFY_URL`, `APPRISE_DISCORD_URL`, `APPRISE_EMAIL_URL`, `APPRISE_MATTERMOST_URL`, etc.
-- `LOKI_PUSH_URL` for Loki notifications
 - `VERBOSE=1` for debug logging
 
 See `.env.example` for details.
