@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.0 (2025-06-19)
+
+### Features
+
+- Add Gotify notification support and update dependencies
+  ([`3289522`](https://github.com/timmyb824/notifiq/commit/328952246b49850c58796dfb53ff8efed43ac68b))
+
+
 ## v1.3.0 (2025-06-07)
 
 ### Features
