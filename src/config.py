@@ -16,14 +16,12 @@ class Config:
         self.rabbitmq_queue = os.environ.get("RABBITMQ_QUEUE", "alerts")
         self.rabbitmq_vhost = os.environ.get("RABBITMQ_VHOST", "/")
 
-        # Apprise notifier URLs (channels)
-        self.apprise_urls: dict[str, Optional[str]] = {
-            "ntfy": os.environ.get("APPRISE_NTFY_URL"),
-            "discord": os.environ.get("APPRISE_DISCORD_URL"),
-            "email": os.environ.get("APPRISE_EMAIL_URL"),
-            "mattermost": os.environ.get("APPRISE_MATTERMOST_URL"),
-            "gotify": os.environ.get("APPRISE_GOTIFY_URL"),
-        }
+        # Dynamically build Apprise notifier URLs (channels)
+        self.apprise_urls: dict[str, Optional[str]] = {}
+        for key, value in os.environ.items():
+            if key.startswith("APPRISE_") and key.endswith("_URL") and value:
+                provider = key[len("APPRISE_") : -len("_URL")].lower()
+                self.apprise_urls[provider] = value
 
         # Loki notifier URL
         self.loki_url = os.environ.get("LOKI_PUSH_URL")
