@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.5.2 (2025-06-20)
+
+### Documentation
+
+- Add workflow guide for version and release process
+  ([`8ff0694`](https://github.com/timmyb824/notifiq/commit/8ff0694fc1567dc9a247016f11907eb3dddc033e))
+
+
 ## v1.5.1 (2025-06-20)
 
 ### Bug Fixes
