@@ -2,7 +2,7 @@
 
 IMAGE_NAME="notifiq"
 REGISTRY="registry.local.timmybtech.com"
-TAG="$2"
+TAG="$1"
 PLATFORM="linux/amd64"
 ARGOCD_APP_NAME="notifiq"
 ARGOCD_SERVER="argocd.local.timmybtech.com"
@@ -31,7 +31,7 @@ handle_error() {
     exit 1
 }
 
-if [ "$1" = "skip" ]; then
+if [ "$2" = "skip" ]; then
     msg_info "Skipping pre-deployment checks..."
 else
     msg_info "Checking for uncommitted changes..."
