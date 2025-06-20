@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.5.0 (2025-06-20)
+
+### Features
+
+- Allow custom tag parameter in deploy script
+  ([`118dcbd`](https://github.com/timmyb824/notifiq/commit/118dcbd225fd2f2672bb74ecc4f03a3002328a0b))
+
+
 ## v1.4.1 (2025-06-20)
 
 ### Refactoring
