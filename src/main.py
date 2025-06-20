@@ -15,7 +15,6 @@ from src.config import Config
 from src.health import start_health_server
 from src.logging_config import setup_logging
 from src.notifiers.apprise_notifier import AppriseNotifier
-from src.notifiers.loki_notifier import LokiNotifier
 from src.notifiers.mattermost_notifier import MattermostNotifier
 from src.notifiers.ntfy_direct_notifier import NtfyDirectNotifier
 from src.routing import get_target_notifiers
@@ -56,8 +55,6 @@ if ntfy_url := config.apprise_urls.get("ntfy"):
     notifiers["ntfy-direct"] = NtfyDirectNotifier(ntfy_url)  # type: ignore
 if mattermost_url := config.apprise_urls.get("mattermost"):
     notifiers["mattermost"] = MattermostNotifier(mattermost_url)  # type: ignore
-if loki_url := config.loki_url:
-    notifiers["loki"] = LokiNotifier(loki_url)  # type: ignore
 
 
 def dispatch_notification(title: str, message: str, channels: list[str], **kwargs):
@@ -73,13 +70,10 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
     prom_start_time = kwargs.pop("_prom_start_time", None)
     apprise_channels = []
     ntfy_direct_needed = False
-    loki_needed = False
     mattermost_needed = False
     try:
         for channel in channels:
-            if channel == "loki":
-                loki_needed = True
-            elif channel == "mattermost":
+            if channel == "mattermost":
                 mattermost_needed = True
             elif channel == "ntfy-direct":
                 ntfy_direct_needed = True
@@ -91,8 +85,6 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
             notifiers["mattermost"].send(title, message, ["mattermost"], **kwargs)
         if ntfy_direct_needed and "ntfy-direct" in notifiers:
             notifiers["ntfy-direct"].send(title, message, ["ntfy-direct"], **kwargs)
-        if loki_needed and "loki" in notifiers:
-            notifiers["loki"].send(title, message)
         for channel in channels:
             MESSAGES_DELIVERED.labels(channel=channel).inc()
         if prom_start_time is not None:

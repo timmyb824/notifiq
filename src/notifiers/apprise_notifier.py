@@ -1,3 +1,5 @@
+import re
+import urllib.parse
 from typing import Any
 
 import apprise
@@ -31,7 +33,6 @@ class AppriseNotifier(BaseNotifier):
             channels: List of channel names (e.g., ["ntfy", "loki"])
             kwargs: Extra arguments for the notifier.
         """
-        import re
 
         aps = apprise.Apprise()
         for channel in channels:
@@ -42,7 +43,6 @@ class AppriseNotifier(BaseNotifier):
 
             # Dynamic ntfy topic override
             if channel == "ntfy" and "ntfy_topic" in kwargs:
-                import urllib.parse
 
                 parsed = urllib.parse.urlparse(url)
                 # Remove trailing slash, split path, replace last segment
@@ -50,6 +50,16 @@ class AppriseNotifier(BaseNotifier):
                 path_parts[-1] = kwargs["ntfy_topic"]
                 new_path = "/".join(path_parts)
                 url = urllib.parse.urlunparse(parsed._replace(path=new_path))
+
+            # Dynamic gotify app token override
+            if channel == "gotify" and "gotify_app" in kwargs:
+                parsed = urllib.parse.urlparse(url)
+                path_parts = parsed.path.rstrip("/").split("/")
+                # Replace the last segment (token) with gotify_app
+                if len(path_parts) > 0:
+                    path_parts[-1] = kwargs["gotify_app"]
+                    new_path = "/".join(path_parts)
+                    url = urllib.parse.urlunparse(parsed._replace(path=new_path))
 
             # Dynamic mattermost channel override
             if channel == "mattermost" and "mattermost_channel" in kwargs:
