@@ -2,7 +2,7 @@
 
 IMAGE_NAME="notifiq"
 REGISTRY="registry.local.timmybtech.com"
-TAG="latest"
+TAG="$2"
 PLATFORM="linux/amd64"
 ARGOCD_APP_NAME="notifiq"
 ARGOCD_SERVER="argocd.local.timmybtech.com"
