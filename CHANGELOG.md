@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v1.5.3 (2025-06-20)
+
+### Refactoring
+
+- Remove Loki notifier and add Gotify support with dynamic app token override
+  ([`2479f3c`](https://github.com/timmyb824/notifiq/commit/2479f3c9970fe53745a206ae82850cc8321be93c))
+
+- Remove Loki notifier and add Gotify support with dynamic app token override
+  ([`c84e6bc`](https://github.com/timmyb824/notifiq/commit/c84e6bcb2dc6ca92033328d6f76e15397e25ab28))
+
+
 ## v1.5.2 (2025-06-20)
 
 ### Documentation
