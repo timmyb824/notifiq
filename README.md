@@ -1,6 +1,6 @@
 # notifiq
 
-A modular, extensible notification routing hub for Kubernetes and cloud-native environments. notifiq consumes messages from RabbitMQ and dispatches notifications to multiple channels (Ntfy, Discord, Email, Mattermost, Loki, etc.) with structured JSON logging and health endpoints for observability.
+A modular, extensible notification routing hub for Kubernetes and cloud-native environments. notifiq consumes messages from RabbitMQ and dispatches notifications to multiple channels (Ntfy, Discord, Email, Mattermost, Gotify, etc.) with structured JSON logging and health endpoints for observability.
 
 ## Features
 
