@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.5.1 (2025-06-20)
+
+### Bug Fixes
+
+- Swap argument order in deploy script and add workflow doc template
+  ([`de3ed02`](https://github.com/timmyb824/notifiq/commit/de3ed02576da0078a86cd3f2bebcdc03ae0050d5))
+
+
 ## v1.5.0 (2025-06-20)
 
 ### Features
