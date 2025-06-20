@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.1 (2025-06-20)
+
+### Refactoring
+
+- Dynamically build apprise URLs from environment variables instead of hardcoding providers
+  ([`85f5b4e`](https://github.com/timmyb824/notifiq/commit/85f5b4e451f5ca8fc75c60b65f7cfaa363898f6e))
+
+
 ## v1.4.0 (2025-06-19)
 
 ### Features
