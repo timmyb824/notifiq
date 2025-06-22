@@ -9,32 +9,56 @@ from src.notifiers.base import BaseNotifier
 
 setup_logging()
 
-# Priority mappings for Gotify
+# String-based priority mappings for Gotify
 GOTIFY_PRIORITY_MAP = {
-    0: "low",
-    3: "moderate",
-    5: "normal",
-    8: "high",
-    10: "emergency",
+    "min": "low",
+    "low": "low",
+    "moderate": "moderate",
+    "normal": "normal",
+    "default": "normal",
+    "high": "high",
+    "critical": "emergency",
+    "emergency": "emergency",
+    "max": "emergency",
 }
 
 
-def map_gotify_priority(priority: int) -> str:
-    return GOTIFY_PRIORITY_MAP.get(priority, "normal")
+def map_gotify_priority(priority: str) -> str:
+    """
+    Map a string-based priority to a Gotify priority.
+    Args:
+        priority: The priority to map.
+    Returns:
+        The mapped priority.
+    """
+    p = priority.strip().lower()
+    return GOTIFY_PRIORITY_MAP.get(p, "normal")
 
 
-# Priority mappings for ntfy
+# String-based priority mappings for ntfy
 NTFY_PRIORITY_MAP = {
-    1: "min",
-    2: "low",
-    3: "default",
-    4: "high",
-    5: "max",
+    "min": "min",
+    "low": "low",
+    "moderate": "low",
+    "normal": "default",
+    "default": "default",
+    "high": "high",
+    "critical": "max",
+    "emergency": "max",
+    "max": "max",
 }
 
 
-def map_ntfy_priority(priority: int) -> str:
-    return NTFY_PRIORITY_MAP.get(priority, "default")
+def map_ntfy_priority(priority: str) -> str:
+    """
+    Map a string-based priority to a ntfy priority.
+    Args:
+        priority: The priority to map.
+    Returns:
+        The mapped priority.
+    """
+    p = priority.strip().lower()
+    return NTFY_PRIORITY_MAP.get(p, "default")
 
 
 class AppriseNotifier(BaseNotifier):
@@ -60,62 +84,102 @@ class AppriseNotifier(BaseNotifier):
             channels: List of channel names (e.g., ["ntfy", "loki"])
             kwargs: Extra arguments for the notifier. Supports 'priority' for Gotify notifications.
         """
-
         aps = apprise.Apprise()
         for channel in channels:
             url = self.urls.get(channel)
             if not url:
-                # Optionally, log missing channel
                 continue
+            url = self._transform_url(channel, url, kwargs)
+            aps.add(url)
+        aps.notify(title=title, body=message)
 
-            # Dynamic ntfy topic override
-            if channel == "ntfy" and "ntfy_topic" in kwargs:
-                parsed = urllib.parse.urlparse(url)
-                # Remove trailing slash, split path, replace last segment
-                path_parts = str(parsed.path).rstrip("/").split("/")
-                path_parts[-1] = str(kwargs["ntfy_topic"])
+    def _transform_url(self, channel: str, url: str, kwargs: dict) -> str:
+        """
+        Transform an Apprise URL with dynamic channel override.
+        Args:
+            channel: The channel name.
+            url: The Apprise URL to transform.
+            kwargs: Extra arguments for the notifier.
+        Returns:
+            The transformed URL.
+        """
+        if channel == "ntfy":
+            return self._transform_ntfy_url(url, kwargs)
+        if channel == "gotify":
+            return self._transform_gotify_url(url, kwargs)
+        if channel == "mattermost":
+            return self._transform_mattermost_url(url, kwargs)
+        return url
+
+    def _transform_ntfy_url(self, url: str, kwargs: dict) -> str:
+        # sourcery skip: class-extract-method
+        """
+        Transform an ntfy URL with dynamic topic override.
+        Args:
+            url: The ntfy URL to transform.
+            kwargs: Extra arguments for the notifier. Supports 'ntfy_topic' for ntfy notifications.
+        Returns:
+            The transformed URL.
+        """
+        if "ntfy_topic" in kwargs:
+            parsed = urllib.parse.urlparse(url)
+            path_parts = str(parsed.path).rstrip("/").split("/")
+            path_parts[-1] = str(kwargs["ntfy_topic"])
+            new_path = "/".join(path_parts)
+            url = urllib.parse.urlunparse(parsed._replace(path=new_path))
+        # ntfy priority mapping
+        if "priority" in kwargs:
+            ntfy_priority = map_ntfy_priority(kwargs["priority"])
+            if "?" in str(url):
+                url = f"{url}&priority={ntfy_priority}"
+            else:
+                url = f"{url}?priority={ntfy_priority}"
+        return url
+
+    def _transform_gotify_url(self, url: str, kwargs: dict) -> str:
+        """
+        Transform a Gotify URL with dynamic app token override.
+        Args:
+            url: The Gotify URL to transform.
+            kwargs: Extra arguments for the notifier. Supports 'gotify_app' for Gotify notifications.
+        Returns:
+            The transformed URL.
+        """
+        if "gotify_app" in kwargs:
+            parsed = urllib.parse.urlparse(url)
+            if path_parts := str(parsed.path).rstrip("/").split("/"):
+                path_parts[-1] = str(kwargs["gotify_app"])
                 new_path = "/".join(path_parts)
                 url = urllib.parse.urlunparse(parsed._replace(path=new_path))
+        # gotify priority mapping
+        if "priority" in kwargs:
+            gotify_priority = map_gotify_priority(kwargs["priority"])
+            if "?" in str(url):
+                url = f"{url}&priority={gotify_priority}"
+            else:
+                url = f"{url}?priority={gotify_priority}"
+        return url
 
-            # ntfy priority mapping
-            if channel == "ntfy" and "priority" in kwargs:
-                ntfy_priority = map_ntfy_priority(kwargs["priority"])
-                if "?" in str(url):
-                    url = f"{url}&priority={ntfy_priority}"
-                else:
-                    url = f"{url}?priority={ntfy_priority}"
-
-            # Dynamic gotify app token override
-            if channel == "gotify" and "gotify_app" in kwargs:
-                parsed = urllib.parse.urlparse(url)
-                if path_parts := str(parsed.path).rstrip("/").split("/"):
-                    path_parts[-1] = str(kwargs["gotify_app"])
-                    new_path = "/".join(path_parts)
-                    url = urllib.parse.urlunparse(parsed._replace(path=new_path))
-
-            # gotify priority mapping
-            if channel == "gotify" and "priority" in kwargs:
-                gotify_priority = map_gotify_priority(kwargs["priority"])
-                if "?" in str(url):
-                    url = f"{url}&priority={gotify_priority}"
-                else:
-                    url = f"{url}?priority={gotify_priority}"
-
-            # Dynamic mattermost channel override
-            if channel == "mattermost" and "mattermost_channel" in kwargs:
-                if "?" in str(url):
-                    # Replace or add channel param
-                    if re.search(r"[?&]channel=", str(url)):
-                        url = re.sub(
-                            r"([?&])channel=[^&]*",
-                            f"\\1channel={kwargs['mattermost_channel']}",
-                            str(url),
-                        )
-                    else:
-                        url = f"{str(url)}&channel={kwargs['mattermost_channel']}"
-                else:
-                    url = f"{str(url)}?channel={kwargs['mattermost_channel']}"
-
-            aps.add(url)
-
-        aps.notify(title=title, body=message)
+    def _transform_mattermost_url(self, url: str, kwargs: dict) -> str:
+        """
+        Transform a Mattermost URL with dynamic channel override.
+        Args:
+            url: The Mattermost URL to transform.
+            kwargs: Extra arguments for the notifier. Supports 'mattermost_channel' for Mattermost notifications.
+        Returns:
+            The transformed URL.
+        """
+        if "mattermost_channel" in kwargs:
+            if "?" in url:
+                url = (
+                    re.sub(
+                        r"([?&])channel=[^&]*",
+                        f"\\1channel={kwargs['mattermost_channel']}",
+                        url,
+                    )
+                    if re.search(r"[?&]channel=", url)
+                    else f"{url}&channel={kwargs['mattermost_channel']}"
+                )
+            else:
+                url = f"{str(url)}?channel={kwargs['mattermost_channel']}"
+        return url
