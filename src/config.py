@@ -22,6 +22,3 @@ class Config:
             if key.startswith("APPRISE_") and key.endswith("_URL") and value:
                 provider = key[len("APPRISE_") : -len("_URL")].lower()
                 self.apprise_urls[provider] = value
-
-        # Loki notifier URL
-        self.loki_url = os.environ.get("LOKI_PUSH_URL")
