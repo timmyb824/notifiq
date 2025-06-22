@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.6.1 (2025-06-22)
+
+### Refactoring
+
+- Convert priority mappings from integers to strings and improve URL transformation logic
+  ([`da0bb6d`](https://github.com/timmyb824/notifiq/commit/da0bb6d13c5b9cdcd81dc9ec4283c0c9f589d41b))
+
+
 ## v1.6.0 (2025-06-22)
 
 ### Features
