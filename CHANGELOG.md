@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.6.2 (2025-06-22)
+
+### Refactoring
+
+- Remove unused Loki URL configuration and update environment variables
+  ([`2860464`](https://github.com/timmyb824/notifiq/commit/286046411178cda823df7892692beaf5612e5c74))
+
+
 ## v1.6.1 (2025-06-22)
 
 ### Refactoring
