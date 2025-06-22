@@ -9,6 +9,33 @@ from src.notifiers.base import BaseNotifier
 
 setup_logging()
 
+# Priority mappings for Gotify
+GOTIFY_PRIORITY_MAP = {
+    0: "low",
+    3: "moderate",
+    5: "normal",
+    8: "high",
+    10: "emergency",
+}
+
+
+def map_gotify_priority(priority: int) -> str:
+    return GOTIFY_PRIORITY_MAP.get(priority, "normal")
+
+
+# Priority mappings for ntfy
+NTFY_PRIORITY_MAP = {
+    1: "min",
+    2: "low",
+    3: "default",
+    4: "high",
+    5: "max",
+}
+
+
+def map_ntfy_priority(priority: int) -> str:
+    return NTFY_PRIORITY_MAP.get(priority, "default")
+
 
 class AppriseNotifier(BaseNotifier):
     """
@@ -31,7 +58,7 @@ class AppriseNotifier(BaseNotifier):
             title: The notification title.
             message: The notification body.
             channels: List of channel names (e.g., ["ntfy", "loki"])
-            kwargs: Extra arguments for the notifier.
+            kwargs: Extra arguments for the notifier. Supports 'priority' for Gotify notifications.
         """
 
         aps = apprise.Apprise()
@@ -43,23 +70,36 @@ class AppriseNotifier(BaseNotifier):
 
             # Dynamic ntfy topic override
             if channel == "ntfy" and "ntfy_topic" in kwargs:
-
                 parsed = urllib.parse.urlparse(url)
                 # Remove trailing slash, split path, replace last segment
-                path_parts = parsed.path.rstrip("/").split("/")
-                path_parts[-1] = kwargs["ntfy_topic"]
+                path_parts = str(parsed.path).rstrip("/").split("/")
+                path_parts[-1] = str(kwargs["ntfy_topic"])
                 new_path = "/".join(path_parts)
                 url = urllib.parse.urlunparse(parsed._replace(path=new_path))
+
+            # ntfy priority mapping
+            if channel == "ntfy" and "priority" in kwargs:
+                ntfy_priority = map_ntfy_priority(kwargs["priority"])
+                if "?" in str(url):
+                    url = f"{url}&priority={ntfy_priority}"
+                else:
+                    url = f"{url}?priority={ntfy_priority}"
 
             # Dynamic gotify app token override
             if channel == "gotify" and "gotify_app" in kwargs:
                 parsed = urllib.parse.urlparse(url)
-                path_parts = parsed.path.rstrip("/").split("/")
-                # Replace the last segment (token) with gotify_app
-                if len(path_parts) > 0:
-                    path_parts[-1] = kwargs["gotify_app"]
+                if path_parts := str(parsed.path).rstrip("/").split("/"):
+                    path_parts[-1] = str(kwargs["gotify_app"])
                     new_path = "/".join(path_parts)
                     url = urllib.parse.urlunparse(parsed._replace(path=new_path))
+
+            # gotify priority mapping
+            if channel == "gotify" and "priority" in kwargs:
+                gotify_priority = map_gotify_priority(kwargs["priority"])
+                if "?" in str(url):
+                    url = f"{url}&priority={gotify_priority}"
+                else:
+                    url = f"{url}?priority={gotify_priority}"
 
             # Dynamic mattermost channel override
             if channel == "mattermost" and "mattermost_channel" in kwargs:
@@ -77,4 +117,5 @@ class AppriseNotifier(BaseNotifier):
                     url = f"{str(url)}?channel={kwargs['mattermost_channel']}"
 
             aps.add(url)
+
         aps.notify(title=title, body=message)

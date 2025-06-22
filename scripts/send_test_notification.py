@@ -30,6 +30,11 @@ def main():
         "--mattermost_channel",
         help="Override the default Mattermost channel",
     )
+    parser.add_argument(
+        "--priority",
+        type=int,
+        help="Override the default priority for Gotify notifications",
+    )
     args = parser.parse_args()
 
     rabbitmq_host = os.environ.get("RABBITMQ_HOST", "localhost")
@@ -50,6 +55,8 @@ def main():
         msg["ntfy_topic"] = args.ntfy_topic
     if args.mattermost_channel:
         msg["mattermost_channel"] = args.mattermost_channel
+    if args.priority:
+        msg["priority"] = args.priority
 
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(

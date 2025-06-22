@@ -64,7 +64,7 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
         title: Notification title
         message: Notification message
         channels: List of channels to notify
-        kwargs: Extra arguments for dynamic routing (e.g., ntfy_topic, mattermost_channel)
+        kwargs: Extra arguments for dynamic routing (e.g., ntfy_topic, mattermost_channel, priority)
     """
     # For Prometheus timing
     prom_start_time = kwargs.pop("_prom_start_time", None)
