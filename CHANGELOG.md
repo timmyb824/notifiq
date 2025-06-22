@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.6.0 (2025-06-22)
+
+### Features
+
+- Add priority support for Gotify and ntfy notifications
+  ([`92f2025`](https://github.com/timmyb824/notifiq/commit/92f2025110d527e9e6ae092cde35e2630bd777f1))
+
+
 ## v1.5.3 (2025-06-20)
 
 ### Refactoring
