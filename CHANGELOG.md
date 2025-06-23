@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.7.0 (2025-06-23)
+
+### Features
+
+- Add markdown formatting to Gotify notifications and update environment variables
+  ([`9e12540`](https://github.com/timmyb824/notifiq/commit/9e125401e1f1930b02601a31d068424a088321fa))
+
+
 ## v1.6.2 (2025-06-22)
 
 ### Refactoring
