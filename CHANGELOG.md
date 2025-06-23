@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.7.1 (2025-06-23)
+
+### Refactoring
+
+- Conditionally refresh ArgoCD app only when using latest tag
+  ([`cda19ba`](https://github.com/timmyb824/notifiq/commit/cda19bacd448d4ef8bccc740fc32fb40b1c07a56))
+
+
 ## v1.7.0 (2025-06-23)
 
 ### Features
