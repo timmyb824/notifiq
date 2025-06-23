@@ -138,7 +138,7 @@ class AppriseNotifier(BaseNotifier):
 
     def _transform_gotify_url(self, url: str, kwargs: dict) -> str:
         """
-        Transform a Gotify URL with dynamic app token override.
+        Transform a Gotify URL with dynamic app token override and always set format=markdown.
         Args:
             url: The Gotify URL to transform.
             kwargs: Extra arguments for the notifier. Supports 'gotify_app' for Gotify notifications.
@@ -158,6 +158,8 @@ class AppriseNotifier(BaseNotifier):
                 url = f"{url}&priority={gotify_priority}"
             else:
                 url = f"{url}?priority={gotify_priority}"
+        # Always set format=markdown
+        url = f"{url}&format=markdown" if "?" in str(url) else f"{url}?format=markdown"
         return url
 
     def _transform_mattermost_url(self, url: str, kwargs: dict) -> str:
