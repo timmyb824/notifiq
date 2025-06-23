@@ -90,7 +90,10 @@ restart_argocd_deployment() {
 }
 
 build_and_push_image
-refresh_argocd_app
-restart_argocd_deployment
+
+if [ "$TAG" = "latest" ]; then
+    refresh_argocd_app
+    restart_argocd_deployment
+fi
 
 msg_ok "Deployment script completed successfully!"
