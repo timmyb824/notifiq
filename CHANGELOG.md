@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.8.0 (2025-07-03)
+
+### Features
+
+- Update pre-commit hooks to use newer versions and add option to override Gotify app token
+  ([`90a0dee`](https://github.com/timmyb824/notifiq/commit/90a0deee2399330e96d7e5c78af220db8fe819e6))
+
+
 ## v1.7.1 (2025-06-23)
 
 ### Refactoring
