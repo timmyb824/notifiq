@@ -32,8 +32,12 @@ def main():
     )
     parser.add_argument(
         "--priority",
-        type=int,
+        type=str,
         help="Override the default priority for Gotify notifications",
+    )
+    parser.add_argument(
+        "--gotify_app",
+        help="Override the default Gotify app token",
     )
     args = parser.parse_args()
 
@@ -57,6 +61,8 @@ def main():
         msg["mattermost_channel"] = args.mattermost_channel
     if args.priority:
         msg["priority"] = args.priority
+    if args.gotify_app:
+        msg["gotify_app"] = args.gotify_app
 
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
