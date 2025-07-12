@@ -17,6 +17,7 @@ from src.logging_config import setup_logging
 from src.notifiers.apprise_notifier import AppriseNotifier
 from src.notifiers.mattermost_notifier import MattermostNotifier
 from src.notifiers.ntfy_direct_notifier import NtfyDirectNotifier
+from src.notifiers.pushover_direct_notifier import PushoverDirectNotifier
 from src.routing import get_target_notifiers
 
 setup_logging()
@@ -55,6 +56,8 @@ if ntfy_url := config.apprise_urls.get("ntfy"):
     notifiers["ntfy-direct"] = NtfyDirectNotifier(ntfy_url)  # type: ignore
 if mattermost_url := config.apprise_urls.get("mattermost"):
     notifiers["mattermost"] = MattermostNotifier(mattermost_url)  # type: ignore
+if pushover_url := config.apprise_urls.get("pushover"):
+    notifiers["pushover-direct"] = PushoverDirectNotifier(pushover_url)  # type: ignore
 
 
 def dispatch_notification(title: str, message: str, channels: list[str], **kwargs):
@@ -71,12 +74,15 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
     apprise_channels = []
     ntfy_direct_needed = False
     mattermost_needed = False
+    pushover_direct_needed = False
     try:
         for channel in channels:
             if channel == "mattermost":
                 mattermost_needed = True
             elif channel == "ntfy-direct":
                 ntfy_direct_needed = True
+            elif channel == "pushover-direct":
+                pushover_direct_needed = True
             else:
                 apprise_channels.append(channel)
         if apprise_channels:
@@ -85,6 +91,10 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
             notifiers["mattermost"].send(title, message, ["mattermost"], **kwargs)
         if ntfy_direct_needed and "ntfy-direct" in notifiers:
             notifiers["ntfy-direct"].send(title, message, ["ntfy-direct"], **kwargs)
+        if pushover_direct_needed and "pushover-direct" in notifiers:
+            notifiers["pushover-direct"].send(
+                title, message, ["pushover-direct"], **kwargs
+            )
         for channel in channels:
             MESSAGES_DELIVERED.labels(channel=channel).inc()
         if prom_start_time is not None:
@@ -156,9 +166,15 @@ def version():
     if args.version:
         try:
             try:
-                from importlib.metadata import PackageNotFoundError, version
+                from importlib.metadata import (  # pylint: disable=redefined-outer-name
+                    PackageNotFoundError,
+                    version,
+                )
             except ImportError:
-                from importlib_metadata import PackageNotFoundError, version
+                from importlib_metadata import (  # pyright: ignore
+                    PackageNotFoundError,
+                    version,
+                )
 
             try:
                 notifiq_version = version("notifiq")

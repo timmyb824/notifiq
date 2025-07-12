@@ -6,59 +6,9 @@ import apprise
 
 from src.logging_config import setup_logging
 from src.notifiers.base import BaseNotifier
+from src.notifiers.priority_mappings import map_gotify_priority, map_ntfy_priority
 
 setup_logging()
-
-# String-based priority mappings for Gotify
-GOTIFY_PRIORITY_MAP = {
-    "min": "low",
-    "low": "low",
-    "moderate": "moderate",
-    "normal": "normal",
-    "default": "normal",
-    "high": "high",
-    "critical": "emergency",
-    "emergency": "emergency",
-    "max": "emergency",
-}
-
-
-def map_gotify_priority(priority: str) -> str:
-    """
-    Map a string-based priority to a Gotify priority.
-    Args:
-        priority: The priority to map.
-    Returns:
-        The mapped priority.
-    """
-    p = priority.strip().lower()
-    return GOTIFY_PRIORITY_MAP.get(p, "normal")
-
-
-# String-based priority mappings for ntfy
-NTFY_PRIORITY_MAP = {
-    "min": "min",
-    "low": "low",
-    "moderate": "low",
-    "normal": "default",
-    "default": "default",
-    "high": "high",
-    "critical": "max",
-    "emergency": "max",
-    "max": "max",
-}
-
-
-def map_ntfy_priority(priority: str) -> str:
-    """
-    Map a string-based priority to a ntfy priority.
-    Args:
-        priority: The priority to map.
-    Returns:
-        The mapped priority.
-    """
-    p = priority.strip().lower()
-    return NTFY_PRIORITY_MAP.get(p, "default")
 
 
 class AppriseNotifier(BaseNotifier):
