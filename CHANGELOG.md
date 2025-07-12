@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.9.3 (2025-07-12)
+
+### Chores
+
+- Add docker-compose file
+  ([`f3e466d`](https://github.com/timmyb824/notifiq/commit/f3e466d544e9c5f8ac9639559c31a7e588a3962b))
+
+
 ## v1.9.2 (2025-07-12)
 
 ### Chores
