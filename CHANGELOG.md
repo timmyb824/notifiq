@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.9.1 (2025-07-12)
+
+### Chores
+
+- Add .dockerignore
+  ([`4acf127`](https://github.com/timmyb824/notifiq/commit/4acf12794d17cf2cee418d4525873757b215e86a))
+
+
 ## v1.9.0 (2025-07-12)
 
 ### Features
