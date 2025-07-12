@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.9.2 (2025-07-12)
+
+### Chores
+
+- Update build configuration and remove docker-compose in favor of .envrc
+  ([`21c9066`](https://github.com/timmyb824/notifiq/commit/21c9066f4a4e24783f00d074fd68be9b107cf866))
+
+
 ## v1.9.1 (2025-07-12)
 
 ### Chores
