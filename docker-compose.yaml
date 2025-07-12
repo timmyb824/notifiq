@@ -1,0 +1,29 @@
+services:
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: guest
+  #     RABBITMQ_DEFAULT_PASS: guest
+
+  notifiq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: notifiq
+    # env_file:
+    #   - .env
+    environment:
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      - APPRISE_NTFY_URL=${APPRISE_NTFY_URL}
+    # depends_on:
+    #   - rabbitmq
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
