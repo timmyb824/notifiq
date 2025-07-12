@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v1.9.0 (2025-07-12)
+
+### Features
+
+- Add direct Pushover notifier with priority mappings and update dependencies
+  ([`b330aae`](https://github.com/timmyb824/notifiq/commit/b330aaedd368d52bf8972f6ad82b8e49a09432c5))
+
+- Add priority mappings module for notification services
+  ([`8874415`](https://github.com/timmyb824/notifiq/commit/8874415d2d30b7995a3a4529a5f7dc8698157843))
+
+
 ## v1.8.0 (2025-07-03)
 
 ### Features
