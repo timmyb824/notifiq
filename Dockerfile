@@ -5,14 +5,19 @@ ENV UV_PYTHON_DOWNLOADS=0
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-WORKDIR /app
-COPY . /app
+ADD . /app
 RUN chmod -R a+r /app
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-install-project --no-dev
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+# OLD BUILD STEPS LEFT FOR REFERENCE
+# RUN --mount=type=cache,target=/root/.cache/uv \
+#     uv sync --frozen --no-install-project --no-dev
+# RUN --mount=type=cache,target=/root/.cache/uv \
+#     uv sync --frozen --no-dev
+
+WORKDIR /app
+
+# Will fail if lockfile is out of date
+RUN uv sync --locked
 
 ####################################################################################################
 
