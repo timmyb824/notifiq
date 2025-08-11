@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v1.10.0 (2025-08-11)
+
+### Chores
+
+- Update dependencies including anyio, apprise, certifi and charset-normalizer
+  ([`36d1ef8`](https://github.com/timmyb824/notifiq/commit/36d1ef87bc41e78fb92c58afa6bccc6780f68a82))
+
+- Update encrypted environment variables config
+  ([`f530aa4`](https://github.com/timmyb824/notifiq/commit/f530aa4a776ad6632a0a521878173468702572eb))
+
+### Features
+
+- Add pushover device targeting support to pushover-direct channel
+  ([`4d4d56d`](https://github.com/timmyb824/notifiq/commit/4d4d56d56fe7a0a682088c2f442f8b38e325be0a))
+
+
 ## v1.9.3 (2025-07-12)
 
 ### Chores
