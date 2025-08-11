@@ -1,6 +1,6 @@
 # notifiq
 
-A modular, extensible notification routing hub for Kubernetes and cloud-native environments. notifiq consumes messages from RabbitMQ and dispatches notifications to multiple channels (Ntfy, Discord, Email, Mattermost, Gotify, etc.) with structured JSON logging and health endpoints for observability.
+A modular, extensible notification routing hub for Kubernetes and cloud-native environments. notifiq consumes messages from RabbitMQ and dispatches notifications to multiple channels (Ntfy, Discord, Email, Mattermost, Gotify, Pushover, etc.) with structured JSON logging and health endpoints for observability.
 
 ## Features
 
@@ -8,11 +8,46 @@ A modular, extensible notification routing hub for Kubernetes and cloud-native e
 - RabbitMQ consumer with credential/env support
 - Apprise integration for multi-channel notifications
 - **Direct ntfy integration with markdown support (ntfy-direct channel)**
+- **Direct pushover integration with device support (pushover-direct channel)**
 - Structured JSON logging (Loki-friendly)
 - Health (`/healthz`) and readiness (`/readyz`) endpoints for Kubernetes
 - Dockerfile and Compose for easy deployment
 - Graceful shutdown handling
 - Example pytest smoke test
+
+---
+
+## pushover-direct Channel & Device Support
+
+notifiq supports sending notifications directly to [pushover](https://pushover.net) using the `pushover-direct` channel. This allows you to:
+
+- Use the `pushover_device` parameter to target specific devices registered with your Pushover account. This parameter supports both single device names and lists of device names.
+
+**Example:**
+
+Single device:
+
+```json
+{
+  "title": "Test Notification",
+  "message": "This goes to a specific device",
+  "channels": ["pushover-direct"],
+  "pushover_device": "iphone"
+}
+```
+
+Multiple devices:
+
+```json
+{
+  "title": "Test Notification",
+  "message": "This goes to multiple devices",
+  "channels": ["pushover-direct"],
+  "pushover_device": ["iphone", "nexus5", "tablet"]
+}
+```
+
+> **Note:** The `pushover_device` parameter is only supported with the `pushover-direct` channel.
 
 ---
 

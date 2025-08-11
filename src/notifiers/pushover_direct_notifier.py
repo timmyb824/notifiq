@@ -59,7 +59,9 @@ class PushoverDirectNotifier(BaseNotifier):
             title: The notification title (can include emojis).
             message: The notification body.
             channels: List of channel names (should include "pushover-direct" if using this notifier).
-            kwargs: Extra Pushover params (html, priority, sound, attachment, etc.)
+            kwargs: Extra Pushover params (html, priority, sound, attachment, pushover_device, etc.)
+                   pushover_device: List of device names or single device name string.
+                                  If a list is provided, it will be joined with commas.
         """
         print("[PUSHOVER SEND CALLED]")
         logging.info("[pushover-direct] send() called with title='%s'", title)
@@ -81,6 +83,15 @@ class PushoverDirectNotifier(BaseNotifier):
         # Handle priority mapping (string or int)
         if "priority" in kwargs:
             data["priority"] = map_pushover_priority(kwargs["priority"])
+
+        # Handle pushover_device parameter (list -> comma-separated string)
+        if "pushover_device" in kwargs:
+            device_list = kwargs["pushover_device"]
+            if isinstance(device_list, list):
+                data["device"] = ",".join(device_list)
+            else:
+                # If it's already a string, use it directly
+                data["device"] = device_list
 
         # Pass through other supported Pushover params if provided
         for pushover_param in [

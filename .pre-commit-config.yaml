@@ -26,13 +26,13 @@ repos:
 
 -   repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.7.20
+    rev: 0.8.8
     hooks:
     -   id: uv-lock
     -   id: uv-export
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
     -   id: check-yaml
         args: [--unsafe]
@@ -54,7 +54,7 @@ repos:
     -   id: ripsecrets
 
 -   repo: https://github.com/trufflesecurity/trufflehog
-    rev: v3.89.2
+    rev: v3.90.3
     hooks:
     -   id: trufflehog
         name: TruffleHog

@@ -39,13 +39,17 @@ def main():
         "--gotify_app",
         help="Override the default Gotify app token",
     )
+    parser.add_argument(
+        "--pushover_device",
+        help="Override the default Pushover device",
+    )
     args = parser.parse_args()
 
     rabbitmq_host = os.environ.get("RABBITMQ_HOST", "localhost")
     rabbitmq_port = int(os.environ.get("RABBITMQ_PORT", 5672))
     rabbitmq_user = os.environ.get("RABBITMQ_USER", "guest")
     rabbitmq_pass = os.environ.get("RABBITMQ_PASS", "guest")
-    rabbitmq_queue = os.environ.get("RABBITMQ_QUEUE", "alerts")
+    rabbitmq_queue = os.environ.get("RABBITMQ_QUEUE", "homelab.alerts")
 
     credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_pass)
 
@@ -63,6 +67,8 @@ def main():
         msg["priority"] = args.priority
     if args.gotify_app:
         msg["gotify_app"] = args.gotify_app
+    if args.pushover_device:
+        msg["pushover_device"] = args.pushover_device
 
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
