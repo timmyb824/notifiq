@@ -8,7 +8,7 @@ import requests
 def wait_for_healthz(url, timeout=10):
     for _ in range(timeout):
         with contextlib.suppress(Exception):
-            r = requests.get(url)
+            r = requests.get(url, timeout=5)
             if r.status_code == 200:
                 return True
         time.sleep(1)
@@ -25,7 +25,7 @@ def test_health_and_ready():
         base_url = "http://127.0.0.1:8080"
         assert wait_for_healthz(f"{base_url}/healthz"), "/healthz did not become ready"
         # /readyz may fail if RabbitMQ is not available, but should return 200 or 503
-        r = requests.get(f"{base_url}/readyz")
+        r = requests.get(f"{base_url}/readyz", timeout=5)
         assert r.status_code in {200, 503}
     finally:
         proc.terminate()
