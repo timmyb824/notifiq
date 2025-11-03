@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.11.0 (2025-11-03)
+
+### Features
+
+- Add multi-application support for Pushover notifications
+  ([`782fb67`](https://github.com/timmyb824/notifiq/commit/782fb67168394d7c4a358196b2889c7515eb16af))
+
+
 ## v1.10.0 (2025-08-11)
 
 ### Chores
