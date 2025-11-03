@@ -43,6 +43,10 @@ def main():
         "--pushover_device",
         help="Override the default Pushover device",
     )
+    parser.add_argument(
+        "--pushover_app",
+        help="Specify which Pushover application to use (e.g., infra, cicd, monitoring)",
+    )
     args = parser.parse_args()
 
     rabbitmq_host = os.environ.get("RABBITMQ_HOST", "localhost")
@@ -69,6 +73,8 @@ def main():
         msg["gotify_app"] = args.gotify_app
     if args.pushover_device:
         msg["pushover_device"] = args.pushover_device
+    if args.pushover_app:
+        msg["pushover_app"] = args.pushover_app
 
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
