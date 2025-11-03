@@ -17,11 +17,56 @@ A modular, extensible notification routing hub for Kubernetes and cloud-native e
 
 ---
 
-## pushover-direct Channel & Device Support
+## pushover-direct Channel & Multi-Application Support
 
 notifiq supports sending notifications directly to [pushover](https://pushover.net) using the `pushover-direct` channel. This allows you to:
 
+- **Route notifications to multiple Pushover applications** using the `pushover_app` parameter to organize alerts by category (e.g., infra, cicd, monitoring)
 - Use the `pushover_device` parameter to target specific devices registered with your Pushover account. This parameter supports both single device names and lists of device names.
+
+### Multiple Pushover Applications
+
+Configure multiple Pushover applications by setting environment variables with the pattern `APPRISE_PUSHOVER_{APP_ID}_URL`:
+
+```sh
+export APPRISE_PUSHOVER_INFRA_URL="pover://user@token1"
+export APPRISE_PUSHOVER_CICD_URL="pover://user@token2"
+export APPRISE_PUSHOVER_MONITORING_URL="pover://user@token3"
+```
+
+Then specify which application to use in your message with the `pushover_app` field:
+
+```json
+{
+  "title": "Build Failed",
+  "message": "Pipeline xyz failed on main branch",
+  "channels": ["pushover-direct"],
+  "pushover_app": "cicd"
+}
+```
+
+```json
+{
+  "title": "Server Down",
+  "message": "prod-web-01 is unreachable",
+  "channels": ["pushover-direct"],
+  "pushover_app": "infra"
+}
+```
+
+**Benefits:**
+
+- Separate notifications by category in the Pushover UI
+- Different priorities, sounds, and settings per application
+- Better organization and filtering of alerts
+
+**Backward Compatibility:**
+
+- If you use `APPRISE_PUSHOVER_URL` (without an app identifier), it will be registered as the "default" app
+- If only one Pushover app is configured, `pushover_app` is optional
+- If multiple apps exist but no `pushover_app` is specified, the first app will be used with a warning
+
+### Device Targeting
 
 **Example:**
 
@@ -47,7 +92,19 @@ Multiple devices:
 }
 ```
 
-> **Note:** The `pushover_device` parameter is only supported with the `pushover-direct` channel.
+### Testing
+
+Use the test script to send notifications to specific apps:
+
+```sh
+python scripts/send_test_notification.py \
+  --channels pushover-direct \
+  --title "CI/CD Alert" \
+  --message "Build completed" \
+  --pushover_app cicd
+```
+
+> **Note:** The `pushover_device` and `pushover_app` parameters are only supported with the `pushover-direct` channel.
 
 ---
 

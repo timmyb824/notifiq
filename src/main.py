@@ -56,8 +56,22 @@ if ntfy_url := config.apprise_urls.get("ntfy"):
     notifiers["ntfy-direct"] = NtfyDirectNotifier(ntfy_url)  # type: ignore
 if mattermost_url := config.apprise_urls.get("mattermost"):
     notifiers["mattermost"] = MattermostNotifier(mattermost_url)  # type: ignore
-if pushover_url := config.apprise_urls.get("pushover"):
-    notifiers["pushover-direct"] = PushoverDirectNotifier(pushover_url)  # type: ignore
+
+# Initialize multiple Pushover notifiers (one per application)
+pushover_notifiers = {}
+logging.info(
+    f"Found {len(config.pushover_apps)} Pushover app(s) in config: {list(config.pushover_apps.keys())}"
+)
+for app_id, pushover_url in config.pushover_apps.items():
+    pushover_notifiers[app_id] = PushoverDirectNotifier(pushover_url)
+    logging.info(f"Initialized Pushover notifier for app: {app_id}")
+
+# For backward compatibility: if only one Pushover app exists, register it as "pushover-direct"
+if len(pushover_notifiers) == 1:
+    notifiers["pushover-direct"] = list(pushover_notifiers.values())[0]
+    logging.info(
+        "Single Pushover app detected, registered as 'pushover-direct' for backward compatibility"
+    )
 
 
 def dispatch_notification(title: str, message: str, channels: list[str], **kwargs):
@@ -67,7 +81,7 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
         title: Notification title
         message: Notification message
         channels: List of channels to notify
-        kwargs: Extra arguments for dynamic routing (e.g., ntfy_topic, mattermost_channel, priority)
+        kwargs: Extra arguments for dynamic routing (e.g., ntfy_topic, mattermost_channel, priority, pushover_app)
     """
     # For Prometheus timing
     prom_start_time = kwargs.pop("_prom_start_time", None)
@@ -91,10 +105,44 @@ def dispatch_notification(title: str, message: str, channels: list[str], **kwarg
             notifiers["mattermost"].send(title, message, ["mattermost"], **kwargs)
         if ntfy_direct_needed and "ntfy-direct" in notifiers:
             notifiers["ntfy-direct"].send(title, message, ["ntfy-direct"], **kwargs)
-        if pushover_direct_needed and "pushover-direct" in notifiers:
-            notifiers["pushover-direct"].send(
-                title, message, ["pushover-direct"], **kwargs
+        if pushover_direct_needed:
+            # Route to specific Pushover app if pushover_app is specified
+            pushover_app = kwargs.get("pushover_app")
+            logging.info(
+                f"Pushover routing: pushover_app={pushover_app}, available_apps={list(pushover_notifiers.keys())}, has_default={'pushover-direct' in notifiers}"
             )
+            if pushover_app and pushover_app in pushover_notifiers:
+                # Use the specified Pushover app
+                pushover_notifiers[pushover_app].send(
+                    title, message, ["pushover-direct"], **kwargs
+                )
+                logging.info(f"Sent to Pushover app: {pushover_app}")
+            elif "pushover-direct" in notifiers:
+                # Fall back to single/default notifier for backward compatibility
+                logging.info("Using backward-compatible 'pushover-direct' notifier")
+                notifiers["pushover-direct"].send(
+                    title, message, ["pushover-direct"], **kwargs
+                )
+            elif pushover_notifiers:
+                # If multiple apps exist but no app specified, prefer "default" (from APPRISE_PUSHOVER_URL)
+                if "default" in pushover_notifiers:
+                    logging.warning(
+                        "No pushover_app specified, using 'default' app from APPRISE_PUSHOVER_URL"
+                    )
+                    pushover_notifiers["default"].send(
+                        title, message, ["pushover-direct"], **kwargs
+                    )
+                else:
+                    # Fall back to first app if no default exists
+                    default_app = next(iter(pushover_notifiers))
+                    pushover_notifiers[default_app].send(
+                        title, message, ["pushover-direct"], **kwargs
+                    )
+                    logging.warning(
+                        f"No pushover_app specified and no 'default' app found, using: {default_app}"
+                    )
+            else:
+                logging.error("Pushover requested but no Pushover notifiers configured")
         for channel in channels:
             MESSAGES_DELIVERED.labels(channel=channel).inc()
         if prom_start_time is not None:
